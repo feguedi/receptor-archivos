@@ -1,20 +1,31 @@
+const fs = require('fs')
+const path = require('path')
 const app = require('express')()
+
+const directorio = 'datos'
+
+const directorioRelativo = path.join(__dirname, directorio)
+console.log(directorioRelativo)
+
+const existeDirectorio = fs.existsSync(directorioRelativo)
+!existeDirectorio && fs.mkdirSync(directorioRelativo)
 
 app.use(require('express-fileupload')())
 
 app.get('/', (req, res) => res.send('Hola'))
 app.post('/datos', (req, res) => {
-    console.log('/datos')
     if (!req.files) {
         console.log('No se enviaron datos')
         return res.send('No se envió nada')
     } else {
-        console.log(req.files)
         const { name, mv } = req.files.data
-        mv(`./datos/${ name }`, err => {
+
+        mv(`${directorioRelativo}/${ name }`, err => {
+            console.error(err)
             if (err) return res.send('Hubo un error al guardar el archivo\n')
+        
+            return res.send('Cámara')
         })
-        return res.send('Cámara')
     }
 })
 
